@@ -4,5 +4,8 @@
 # Editor / tooling
 .claude/
 
+# Local secrets
+.gh-token
+
 # Design handoff (chat transcripts, dev screenshots)
 design_handoff/
