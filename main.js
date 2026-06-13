@@ -45,57 +45,65 @@
     document.documentElement.style.cursor = "none";
   }
 
-  /* ---- top bar: collapse into compact pill on scroll --------------- */
+  /* ---- top bar: two modes by ONE breakpoint, no scroll state -------
+     Mode is decided purely by the device, never by scroll position:
+       • Closed pill (dropdown)  → mobile + tablet (default)
+       • Open pill (inline links) → desktop only
+     This matchMedia query is the EXACT twin of the CSS open-pill media
+     query, so JS (dropdown behaviour) and CSS (layout) can never
+     disagree and produce a hybrid state. */
   var topbar = document.getElementById("topbar");
   var navCta = document.getElementById("navCta");
   var navMenu = document.getElementById("navMenu");
-  var navInner = document.querySelector(".nav-links-inner");
-  var navLinksEl = document.querySelector(".nav-links");
-  var collapsed = false;
+  var desktopMq = window.matchMedia("(min-width: 1024px) and (hover: hover) and (pointer: fine)");
+  function isClosedMode() { return !desktopMq.matches; }
 
-  /* measure exact content width so the collapse has no dead-zone */
-  function measureNav() {
-    if (!navLinksEl || !navInner) return;
-    var w = navInner.scrollWidth || navInner.getBoundingClientRect().width;
-    if (w > 0) navLinksEl.style.maxWidth = Math.ceil(w + 4) + "px";
+  function closeMenu() {
+    if (!navMenu) return;
+    navMenu.classList.remove("open");
+    document.body.classList.remove("nav-open");
+    if (navCta) navCta.setAttribute("aria-expanded", "false");
   }
-  measureNav();
-  requestAnimationFrame(measureNav);
-  window.addEventListener("resize", measureNav);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureNav);
-
-  var mobileMq = window.matchMedia("(max-width: 760px)");
-
-  function updateCollapse() {
-    var y = window.scrollY;
-    // on small screens the compact pill + menu IS the navigation (hamburger pattern)
-    var c = mobileMq.matches ? true : (collapsed ? y > 80 : y > 130);
-    if (c !== collapsed) {
-      collapsed = c;
-      if (topbar) topbar.setAttribute("data-collapsed", c ? "true" : "false");
-      if (!c && navMenu) navMenu.classList.remove("open");
-    }
+  function openMenu() {
+    if (!navMenu) return;
+    navMenu.classList.add("open");
+    document.body.classList.add("nav-open");   /* scroll lock */
+    if (navCta) navCta.setAttribute("aria-expanded", "true");
   }
-  window.addEventListener("scroll", updateCollapse, { passive: true });
-  window.addEventListener("resize", updateCollapse);
-  if (mobileMq.addEventListener) mobileMq.addEventListener("change", updateCollapse);
-  updateCollapse();
 
-  /* contact button: link when expanded, dropdown trigger when collapsed */
   if (navCta && navMenu) {
+    navCta.setAttribute("aria-haspopup", "true");
+    navCta.setAttribute("aria-expanded", "false");
+
+    /* the trigger is a dropdown toggle in closed mode, a plain #contact
+       link in open mode (desktop) */
     navCta.addEventListener("click", function (e) {
-      if (collapsed) {
-        e.preventDefault();
-        e.stopPropagation();
-        navMenu.classList.toggle("open");
-      }
+      if (!isClosedMode()) return;          /* desktop: let the link work */
+      e.preventDefault();
+      e.stopPropagation();
+      navMenu.classList.contains("open") ? closeMenu() : openMenu();
     });
+
+    /* choosing a destination closes the menu (and releases the lock) */
     navMenu.querySelectorAll("a").forEach(function (a) {
-      a.addEventListener("click", function () { navMenu.classList.remove("open"); });
+      a.addEventListener("click", closeMenu);
     });
+
+    /* click outside the pill closes the dropdown */
     document.addEventListener("click", function (e) {
-      if (topbar && !topbar.contains(e.target)) navMenu.classList.remove("open");
+      if (topbar && !topbar.contains(e.target)) closeMenu();
     });
+
+    /* ESC closes the dropdown */
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeMenu();
+    });
+
+    /* crossing the desktop breakpoint must never leave a stale dropdown
+       open behind the open-pill layout */
+    var onModeChange = function () { closeMenu(); };
+    if (desktopMq.addEventListener) desktopMq.addEventListener("change", onModeChange);
+    else if (desktopMq.addListener) desktopMq.addListener(onModeChange);
   }
 
   /* ---- scroll reveal (rect-based — robust across iframes) ---------- */
