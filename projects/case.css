@@ -1,0 +1,280 @@
+/* ============================================================
+   NINO RYSSENS — CASE / PROJECT DETAIL PAGE
+   Detail-page-specific styles. Inherits all design tokens and base
+   components (mono, label, media, badge, hovermedia, reveal, cursor,
+   lightbox, topbar, megafoot) from ../styles.css — this file only adds
+   what a long-form case study needs, strictly in the same monochrome
+   editorial system (warm light · Helvetica + IBM Plex Mono · no accent).
+   ============================================================ */
+
+/* keep the fixed pill clear of section anchors */
+:where(.case-hero, .work) { scroll-margin-top: clamp(84px, 12vw, 110px); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.case-hero {
+  max-width: var(--bleed); margin-inline: auto;
+  padding: clamp(110px, 16vw, 180px) var(--pad) clamp(28px, 4vw, 52px);
+}
+.case-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--fg-dim); margin-bottom: clamp(20px, 3vw, 32px);
+}
+.case-eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--fg-strong); }
+.case-hero h1 {
+  font-size: clamp(40px, 7vw, 104px); font-weight: 500; letter-spacing: -0.04em;
+  line-height: 0.94; color: var(--fg-strong); max-width: 15ch; margin-bottom: clamp(20px, 3vw, 32px);
+  text-wrap: balance;
+}
+.case-hero h1 .dim { color: var(--fg-dim); }
+.case-lede {
+  font-size: clamp(16px, 1.6vw, 21px); line-height: 1.4; color: var(--fg-dim);
+  max-width: 52ch; letter-spacing: -0.01em; margin-bottom: clamp(36px, 5vw, 56px);
+}
+
+/* hero meta — same visual language as the homepage .facts table */
+.case-meta {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line-soft); border: 1px solid var(--line-soft);
+  border-radius: var(--radius); overflow: hidden;
+}
+.case-meta .item { background: var(--bg); padding: clamp(16px, 2vw, 24px); display: flex; flex-direction: column; gap: 10px; }
+.case-meta .label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-faint); }
+.case-meta .value { font-size: clamp(14px, 1.4vw, 17px); color: var(--fg); font-weight: 500; letter-spacing: -0.012em; }
+@media (max-width: 760px) { .case-meta { grid-template-columns: repeat(2, 1fr); } }
+
+/* full-width hero image */
+.case-hero-img { max-width: var(--bleed); margin: clamp(28px, 4vw, 52px) auto 0; padding: 0 var(--pad); }
+.case-hero-img .media { aspect-ratio: 16 / 9; }
+
+/* in-page section index — quick jump that opens the target section.
+   Uses --bleed (not --maxw) so its content column lines up exactly with the
+   hero, hero image, sections and footer — one shared left/right edge. */
+.case-index {
+  max-width: var(--bleed); margin: clamp(36px, 5vw, 64px) auto clamp(40px, 6vw, 72px); padding: 0 var(--pad);
+  display: flex; flex-wrap: wrap; gap: 10px;
+}
+.case-index a {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 17px; border-radius: 100px; border: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--fg-dim); background: var(--bg-soft);
+  transition: color .3s var(--ease), border-color .3s var(--ease), background-color .3s var(--ease);
+}
+.case-index a .n { color: var(--fg-faint); }
+.case-index a:hover { color: var(--fg-strong); border-color: var(--fg); background: var(--bg); }
+
+/* ============================================================
+   WORK SECTIONS  (collapsible)
+   ============================================================ */
+.work { border-top: 1px solid var(--line); }
+/* --bleed (not --maxw) keeps section content aligned with the hero & footer */
+.section-inner { max-width: var(--bleed); margin: 0 auto; padding: 0 var(--pad); }
+
+.section-head {
+  display: grid; grid-template-columns: auto 1fr auto auto;
+  align-items: center; gap: clamp(14px, 2.4vw, 32px);
+  padding: clamp(28px, 4vw, 48px) 0; cursor: pointer;
+}
+.section-head .section-num {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; color: var(--fg-faint);
+}
+.section-head .section-title {
+  font-size: clamp(24px, 3.4vw, 46px); font-weight: 500; letter-spacing: -0.035em;
+  line-height: 0.98; color: var(--fg-strong);
+}
+.section-head .section-title .dim { color: var(--fg-dim); }
+.section-head .section-tag {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--fg-dim); text-align: right; max-width: 22ch;
+}
+.section-toggle {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid var(--line); color: var(--fg-strong); flex: 0 0 auto;
+  transition: transform .5s var(--ease), background-color .3s var(--ease);
+}
+.section-toggle svg { width: 18px; height: 18px; }
+.work.is-open .section-toggle { transform: rotate(180deg); background: var(--bg-soft); }
+.section-head:hover .section-toggle { background: var(--bg-soft); }
+
+/* collapse mechanism — grid-rows 0fr→1fr (smooth, no JS height math) */
+.section-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .6s var(--ease); }
+.section-body-inner { overflow: hidden; min-height: 0; }
+.work.is-open .section-body { grid-template-rows: 1fr; }
+.section-body-inner > :first-child { padding-top: 4px; }
+.section-body-inner > :last-child { padding-bottom: clamp(40px, 6vw, 80px); }
+
+.section-desc {
+  font-size: clamp(15px, 1.4vw, 19px); line-height: 1.5; color: var(--fg-dim);
+  max-width: 64ch; letter-spacing: -0.01em; margin-bottom: clamp(24px, 3vw, 40px);
+}
+.section-desc a { color: var(--fg); border-bottom: 1px solid var(--line); transition: border-color .3s var(--ease); }
+.section-desc a:hover { border-color: var(--fg); }
+
+.subhead {
+  display: flex; align-items: center; gap: 12px; margin: clamp(36px, 5vw, 52px) 0 clamp(16px, 2vw, 24px);
+  font-size: clamp(15px, 1.5vw, 18px); font-weight: 500; letter-spacing: -0.018em; color: var(--fg);
+}
+.subhead .num { font-family: var(--font-mono); font-size: 12px; font-weight: 400; color: var(--fg-faint); letter-spacing: 0.04em; }
+.subhead::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* ============================================================
+   CARD GRID
+   ============================================================ */
+.cardgrid { display: grid; grid-template-columns: 1fr; gap: clamp(10px, 1.4vw, 20px); }
+.cardgrid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.cardgrid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px) { .cardgrid.cols-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .cardgrid.cols-2, .cardgrid.cols-3 { grid-template-columns: 1fr; } }
+
+.card { display: flex; flex-direction: column; gap: 14px; }
+.card .thumb { aspect-ratio: 4 / 3; }
+.card .thumb.tall { aspect-ratio: 3 / 4; }
+.card .thumb.wide { aspect-ratio: 16 / 9; }
+/* full-width in-situ hero (billboard / context shot): 3:2 holds a 4:3 source
+   with only a sliver of top/bottom crop, so framed posters stay fully visible */
+.card .thumb.poster-hero { aspect-ratio: 3 / 2; }
+@media (max-width: 620px) { .card .thumb.poster-hero { aspect-ratio: 4 / 3; } }
+.card .thumb.dark { background: #000; }
+.card .thumb.dark video { object-fit: cover; }
+.card .thumb.doc { display: grid; place-items: center; background: var(--bg-soft); }
+.card .thumb.doc svg { width: 72px; height: 72px; stroke: var(--fg-dim); }
+.card .thumb video { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* The homepage zoom/scan hover rules target a NESTED .media; on this page the
+   class sits directly on the .media tile, so restore them for that case. */
+.media.hovermedia:hover .fill { transform: scale(1.04); }
+.media.hovermedia:hover .scan { opacity: 1; animation: scan 6s linear infinite; }
+@media (hover: none), (pointer: coarse) { .media.hovermedia:active .fill { transform: scale(1.03); } }
+.card-body h3 { font-size: clamp(15px, 1.5vw, 18px); font-weight: 500; letter-spacing: -0.02em; color: var(--fg-strong); line-height: 1.1; }
+.card-body p { font-size: 13.5px; line-height: 1.5; color: var(--fg-dim); margin-top: 6px; letter-spacing: -0.005em; }
+.card-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.card-tags .tag {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--fg-dim); border: 1px solid var(--line); border-radius: 100px; padding: 5px 10px;
+}
+.card-tags .tag.solid { background: var(--fg-strong); color: var(--bg); border-color: var(--fg-strong); }
+
+/* a wide "feature" card (e.g. the motion graphic) */
+.card.feature .thumb { aspect-ratio: 16 / 9; }
+
+/* photo gallery — uniform square tiles */
+.pgal { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(8px, 1vw, 12px); }
+.pgal .pitem { aspect-ratio: 1 / 1; }
+@media (max-width: 1024px) { .pgal { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 620px) { .pgal { grid-template-columns: repeat(2, 1fr); } }
+
+/* ============================================================
+   INSTAGRAM PROFILE MOCKUP  — restyled into the monochrome system
+   Keeps the authentic IG profile structure (grid · highlights · stats)
+   but renders the chrome in the site palette: no rainbow ring, no blue
+   buttons. The realism comes from layout, not borrowed brand color.
+   ============================================================ */
+.ig-mock {
+  max-width: 980px; margin: clamp(8px, 1.4vw, 20px) auto 0;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
+  overflow: hidden; box-shadow: 0 28px 70px -34px rgba(26,25,22,0.4);
+}
+.ig-mock-bar { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: var(--bg-soft); border-bottom: 1px solid var(--line); }
+.ig-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--fg-faint); }
+.ig-mock-url {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 100px; padding: 5px 12px;
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.04em; color: var(--fg-dim);
+}
+.ig-mock-url svg { stroke: var(--fg-dim); }
+.ig-mock-inner { padding: clamp(20px, 3vw, 32px) clamp(14px, 2.4vw, 28px) clamp(14px, 2vw, 20px); }
+
+.ig-head { display: grid; grid-template-columns: auto 1fr; gap: clamp(20px, 4vw, 44px); padding-bottom: clamp(20px, 3vw, 30px); border-bottom: 1px solid var(--line-soft); align-items: center; }
+.ig-pfp { width: clamp(80px, 12vw, 150px); aspect-ratio: 1; border-radius: 50%; overflow: hidden; justify-self: center; box-shadow: 0 0 0 1px var(--line); }
+.ig-pfp img { width: 100%; height: 100%; object-fit: cover; }
+.ig-info { display: flex; flex-direction: column; gap: clamp(12px, 2vw, 18px); }
+.ig-row1 { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ig-handle { font-size: clamp(16px, 2vw, 21px); font-weight: 500; letter-spacing: -0.02em; color: var(--fg-strong); margin-right: 4px; }
+.ig-btn { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 100px; padding: 8px 16px; background: var(--bg); color: var(--fg); cursor: pointer; }
+.ig-btn.primary { background: var(--fg-strong); color: var(--bg); border-color: var(--fg-strong); }
+.ig-stats { display: flex; gap: clamp(18px, 3vw, 34px); font-size: 15px; color: var(--fg-dim); letter-spacing: -0.01em; }
+.ig-stats b { font-weight: 600; color: var(--fg-strong); margin-right: 5px; }
+.ig-bio { font-size: 13.5px; line-height: 1.55; color: var(--fg-dim); }
+.ig-bio strong { font-weight: 600; color: var(--fg); }
+.ig-bio .ig-link { color: var(--fg); border-bottom: 1px solid var(--line); }
+
+/* story highlights */
+.ig-highlights { display: flex; gap: clamp(16px, 3vw, 26px); padding: clamp(16px, 2.4vw, 22px) 0; border-bottom: 1px solid var(--line-soft); overflow-x: auto; scrollbar-width: none; }
+.ig-highlights::-webkit-scrollbar { display: none; }
+.ig-hl { border: 0; background: transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0; font-family: inherit; flex-shrink: 0; transition: transform .3s var(--spring); }
+.ig-hl:hover { transform: translateY(-2px); }
+.ig-hl-circle { width: clamp(64px, 9vw, 84px); aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--line); padding: 3px; overflow: hidden; background: var(--bg-soft); }
+.ig-hl-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.ig-hl-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em; color: var(--fg-dim); max-width: 88px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* tabs */
+.ig-tabs { display: flex; justify-content: center; gap: clamp(30px, 6vw, 60px); padding: 14px 0 0; }
+.ig-tab { display: flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 10px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-faint); padding-top: 14px; border-top: 1px solid transparent; }
+.ig-tab.active { color: var(--fg-strong); border-top-color: var(--fg-strong); }
+.ig-tab svg { width: 12px; height: 12px; }
+
+/* post grid */
+.ig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px 0; }
+.ig-cell { aspect-ratio: 4 / 5; overflow: hidden; background: var(--bg-soft); cursor: pointer; position: relative; }
+.ig-cell img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s var(--ease); }
+.ig-cell::after { content: ""; position: absolute; inset: 0; background: rgba(8,8,7,0); transition: background .3s var(--ease); }
+.ig-cell:hover img { transform: scale(1.03); }
+.ig-cell:hover::after { background: rgba(8,8,7,0.18); }
+
+.ig-cta {
+  display: inline-flex; align-items: center; gap: 9px; margin: clamp(18px, 2.4vw, 24px) auto 0; width: fit-content;
+  background: var(--fg-strong); color: var(--bg); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 12px 20px; border-radius: 100px; transition: opacity .3s var(--ease);
+}
+.ig-cta:hover { opacity: 0.84; }
+.ig-cta svg { width: 14px; height: 14px; fill: currentColor; }
+.ig-mock .ig-cta { display: flex; }
+
+/* ============================================================
+   INSTAGRAM STORY VIEWER  (fullscreen tap-through)
+   ============================================================ */
+.sv { position: fixed; inset: 0; background: rgba(16,15,12,0.92); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); display: none; align-items: center; justify-content: center; z-index: 9850; padding: 24px; }
+.sv.open { display: flex; }
+.sv-frame { position: relative; width: min(420px, calc(100vh * 0.5625)); aspect-ratio: 9 / 16; max-height: 90vh; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 40px 120px -30px rgba(0,0,0,0.7); }
+.sv-bars { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 3; display: flex; gap: 4px; }
+.sv-bar { flex: 1; height: 2.5px; background: rgba(255,255,255,0.32); border-radius: 2px; overflow: hidden; }
+.sv-bar-fill { display: block; height: 100%; width: 0; background: #fff; border-radius: 2px; }
+.sv-bar.done .sv-bar-fill { width: 100%; }
+.sv-bar.active .sv-bar-fill { animation: sv-progress 5s linear forwards; }
+@keyframes sv-progress { from { width: 0; } to { width: 100%; } }
+.sv-head { position: absolute; top: 26px; left: 14px; right: 14px; z-index: 3; display: flex; align-items: center; gap: 10px; color: #fff; }
+.sv-pfp { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 1.5px rgba(255,255,255,0.5); flex: 0 0 auto; }
+.sv-pfp img { width: 100%; height: 100%; object-fit: cover; }
+.sv-name { flex: 1; display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; }
+.sv-handle { font-weight: 500; }
+.sv-label { color: rgba(255,255,255,0.62); }
+.sv-close { background: transparent; border: 0; color: #fff; font-size: 26px; cursor: pointer; line-height: 1; width: 32px; height: 32px; }
+.sv-stage { position: absolute; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; }
+.sv-stage img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sv-tap { position: absolute; top: 0; bottom: 0; width: 35%; background: transparent; border: 0; cursor: pointer; z-index: 2; }
+.sv-tap-l { left: 0; } .sv-tap-r { right: 0; }
+@media (prefers-reduced-motion: reduce) { .sv-bar.active .sv-bar-fill { animation: none; width: 100%; } }
+
+/* ============================================================
+   LIGHTBOX EXTENSIONS  — reuse ../styles.css .lb chrome, add PDF/video
+   ============================================================ */
+.lb-content { display: flex; align-items: center; justify-content: center; max-width: min(92vw, 1400px); max-height: 86vh; }
+.lb-content img.lb-media { max-width: min(92vw, 1400px); max-height: 86vh; width: auto; height: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 40px 120px -30px rgba(0,0,0,0.7); }
+.lb-content video.lb-media { max-width: min(92vw, 1400px); max-height: 86vh; border-radius: 8px; background: #000; box-shadow: 0 40px 120px -30px rgba(0,0,0,0.7); }
+.lb-content iframe.lb-media { width: min(92vw, 1100px); height: 86vh; border: 0; border-radius: 8px; background: #fff; box-shadow: 0 40px 120px -30px rgba(0,0,0,0.7); }
+.lb-cap a { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.4); }
+
+/* tablet / mobile section head */
+@media (max-width: 760px) {
+  .section-head { grid-template-columns: auto 1fr auto; row-gap: 12px; }
+  .section-head .section-tag { grid-column: 1 / -1; text-align: left; max-width: none; order: 3; }
+  .case-hero h1 { font-size: clamp(36px, 11vw, 64px); }
+}
+/* phone: keep the IG profile stats/bio legible in the narrow card */
+@media (max-width: 620px) {
+  .ig-head { gap: 16px; }
+  .ig-stats { gap: 16px; font-size: 13px; flex-wrap: wrap; }
+}
