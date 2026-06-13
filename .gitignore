@@ -3,3 +3,6 @@
 
 # Editor / tooling
 .claude/
+
+# Design handoff (chat transcripts, dev screenshots)
+design_handoff/
